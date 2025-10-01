@@ -65,38 +65,50 @@ function App() {
       );
     }
     // 실제 웹페이지라면 else 상황에서는 잔액이 부족하거나 재고가 없다고 팝업이 뜨겠지만
-    // 자판기와 유사하게 작동하게 하기 위해 버튼을 눌러도 아무런 동작도 하지 않습니다.
+    // 자판기와 유사하게 작동하게 하기 위해 else 상황에서 아무런 동작도 하지 않게 했습니다.
   };
 
   return (
-    <div className="App">
+    <div className="App flex flex-row items-start justify-center gap-12 p-12">
       <div className="">
         <h1 className="text-2xl font-bold display-block">자판기</h1>
-        {items.map((item) => (
-          <div
-            key={item.id}
-            className="flex flex-row items-center justify-center"
-          >
-            <div>{item.name}</div>
-            <div>{item.price}원</div>
-            <button
-              onClick={() => buyItem(item.id)}
-              disabled={item.amount === 0 || insertedAmount < item.price}
-              className={`text-white w-[120px] h-[40px] rounded-[12px]
+        <div className="flex flex-col items-center justify-between border-2 border-blue-400 p-24 w-[450px] h-[700px] box-border">
+          <div className="flex flex-row items-center justify-center gap-4 mb-12">
+            {items.map((item) => (
+              <div
+                key={item.id}
+                className="flex flex-col items-center justify-center"
+              >
+                <div>{item.name}</div>
+                <div>{item.price}원</div>
+                <button
+                  onClick={() => buyItem(item.id)}
+                  disabled={item.amount === 0 || insertedAmount < item.price}
+                  className={`text-white w-[120px] h-[40px] rounded-[12px]
                 ${
                   item.amount === 0 || insertedAmount < item.price
                     ? "cursor-default bg-gray-400"
                     : "cursor-pointer bg-red-400"
                 }`}
-            >
-              {item.amount === 0 ? "품절" : "구매하기"}
-            </button>
+                >
+                  {item.amount === 0 ? "품절" : "구매하기"}
+                </button>
+              </div>
+            ))}
           </div>
-        ))}
+          <div>
+            <div>상품 출구</div>
+            <div className="border-2 border-black-700 w-[120px] h-[60px]">
+              {boughtItems.map((item) => (
+                <div key={item.id}>{item.name}</div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
       <div className="flex flex-col items-center justify-center">
         <h3>현금투입</h3>
-        <div className="flex flex-row items-center justify-center gap-4">
+        <div className="flex flex-col items-center justify-center gap-4">
           {insertableCash.map((item) => (
             <button
               key={item}
@@ -128,7 +140,12 @@ function App() {
       </div>
       <div>
         <h3>카드결제</h3>
-        <button>카드</button>
+        <button
+          className="text-red-400 w-[120px] h-[40px] rounded-[12px] border-2 border-red-400"
+          onClick={() => {}}
+        >
+          카드
+        </button>
       </div>
     </div>
   );
