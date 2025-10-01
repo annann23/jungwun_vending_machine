@@ -57,21 +57,15 @@ function App() {
       <div className="flex flex-col items-center justify-center">
         <h3>현금투입</h3>
         <div className="flex flex-row items-center justify-center gap-4">
-          <button className="text-red-400 w-[120px] h-[40px] rounded-[12px] border-2 border-red-400">
-            100원
-          </button>
-          <button className="text-red-400 w-[120px] h-[40px] rounded-[12px] border-2 border-red-400">
-            500원
-          </button>
-          <button className="text-red-400 w-[120px] h-[40px] rounded-[12px] border-2 border-red-400">
-            1000원
-          </button>
-          <button className="text-red-400 w-[120px] h-[40px] rounded-[12px] border-2 border-red-400">
-            5000원
-          </button>
-          <button className="text-red-400 w-[120px] h-[40px] rounded-[12px] border-2 border-red-400">
-            10000원
-          </button>
+          {insertableCash.map((item) => (
+            <button
+              key={item}
+              onClick={() => setInsertedAmount(insertedAmount + item)}
+              className="text-red-400 w-[120px] h-[40px] rounded-[12px] border-2 border-red-400"
+            >
+              {item}원
+            </button>
+          ))}
         </div>
         <div>투입 금액: {insertedAmount} 원</div>
       </div>
