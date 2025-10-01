@@ -141,6 +141,7 @@ function App() {
 
     if (item && item.amount > 0) {
       if (isCardPayment) {
+        //카드로 결제한다면 물품 구매 후 바로 완료로 넘어감
         setBoughtItems([...boughtItems, item]);
         setIsCardPayment((prev) => !prev);
         return;
@@ -186,7 +187,7 @@ function App() {
                   onClick={() => buyItem(item.id)}
                   className={`text-white w-[120px] h-[40px] rounded-[12px]
                 ${
-                  item.amount != 0 &&
+                  item.amount !== 0 &&
                   (insertedAmount >= item.price || isCardPayment)
                     ? "cursor-pointer bg-red-400"
                     : "cursor-default bg-gray-400"
@@ -209,7 +210,7 @@ function App() {
       </div>
       <div className="flex flex-col items-center justify-center">
         <h3 className="mb-4 font-bold text-xl">현금투입</h3>
-        <div className="grid grid-cols-2 gap-4 mb-12">
+        <div className="grid grid-cols-2 gap-4 mb-4">
           {insertableCash.map((item) => (
             <button
               key={item}
