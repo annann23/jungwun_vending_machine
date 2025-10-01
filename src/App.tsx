@@ -21,6 +21,7 @@ function App() {
   const [items, setItems] = useState<itemData[]>([]);
   const [change, setChange] = useState<changeData>();
   const insertableCash = [100, 500, 1000, 5000, 10000];
+  const [boughtItems, setBoughtItems] = useState<itemData[]>([]);
 
   const initItems = () => {
     setItems([
@@ -58,6 +59,7 @@ function App() {
 
     if (item && item.amount > 0 && insertedAmount >= item.price) {
       setInsertedAmount(insertedAmount - item.price);
+      setBoughtItems([...boughtItems, item]);
       setItems(
         items.map((item) =>
           item.id === id ? { ...item, amount: item.amount - 1 } : item
