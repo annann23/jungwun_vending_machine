@@ -118,13 +118,13 @@ function App() {
         </div>
       </div>
       <div className="flex flex-col items-center justify-center">
-        <h3>현금투입</h3>
-        <div className="flex flex-col items-center justify-center gap-4">
+        <h3 className="mb-4 font-bold text-xl">현금투입</h3>
+        <div className="grid grid-cols-2 gap-4 mb-12">
           {insertableCash.map((item) => (
             <button
               key={item}
               onClick={() => setInsertedAmount(insertedAmount + item)}
-              className="text-red-400 w-[120px] h-[40px] rounded-[12px] border-2 border-red-400"
+              className="text-red-400 w-[80px] h-[40px] rounded-[12px] border-2 border-red-400"
             >
               {item}원
             </button>
@@ -150,7 +150,7 @@ function App() {
         )}
       </div>
       <div>
-        <h3>카드결제</h3>
+        <h3 className="mb-4 font-bold text-xl">카드결제</h3>
         <button
           className="text-red-400 w-[120px] h-[40px] rounded-[12px] border-2 border-red-400"
           onClick={() => {}}
