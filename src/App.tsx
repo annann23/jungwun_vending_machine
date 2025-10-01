@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import "./App.css";
 
 interface itemData {
@@ -23,6 +23,13 @@ function App() {
   const insertableCash = [100, 500, 1000, 5000, 10000];
   const [boughtItems, setBoughtItems] = useState<itemData[]>([]);
   const [isCardPayment, setIsCardPayment] = useState(false);
+
+  //===============================================AI=================================================
+  //프롬프트: 사용자가 1분 이상 아무런 동작을 하지 않으면 isCardPayment=true면 false로 바꿔주고, insertedAmount가 남아있다면 다 반환해주는 함수를 만들어줘.
+  // 자동 반환 타이머 관련 상태
+  const autoReturnTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const lastActivityRef = useRef<number>(Date.now());
+  //==================================================================================================
 
   const initItems = () => {
     setItems([
@@ -52,20 +59,84 @@ function App() {
   };
 
   const handleInsertedAmount = (amount: number) => {
+    updateLastActivity();
     if (isCardPayment) returnChange(amount);
     else setInsertedAmount(insertedAmount + amount);
   };
 
   const handleCardPayment = (value: boolean) => {
+    updateLastActivity();
     if (insertedAmount > 0) return;
     setIsCardPayment(value);
   };
+
+  //===============================================AI=================================================
+  //프롬프트: 사용자가 1분 이상 아무런 동작을 하지 않으면 isCardPayment=true면 false로 바꿔주고, insertedAmount가 남아있다면 다 반환해주는 함수를 만들어줘.
+
+  // 사용자 활동 감지 함수
+  const updateLastActivity = () => {
+    lastActivityRef.current = Date.now();
+  };
+
+  // 자동 반환 함수
+  const performAutoReturn = () => {
+    console.log("자동 반환 실행: 1분 이상 동작이 감지되지 않았습니다.");
+
+    // 카드 결제 중이면 취소
+    if (isCardPayment) {
+      setIsCardPayment(false);
+      console.log("카드 결제 자동 취소");
+    }
+
+    // 현금이 남아있으면 반환
+    if (insertedAmount > 0) {
+      returnChange();
+      console.log(`${insertedAmount}원 자동 반환`);
+    }
+  };
+
+  // 타이머 설정 함수
+  const resetAutoReturnTimer = () => {
+    // 기존 타이머가 있으면 제거
+    if (autoReturnTimerRef.current) {
+      clearTimeout(autoReturnTimerRef.current);
+    }
+
+    // 1분(60000ms) 후 자동 반환 실행
+    autoReturnTimerRef.current = setTimeout(() => {
+      performAutoReturn();
+    }, 60000);
+  };
+  //==================================================================================================
 
   useEffect(() => {
     initItems();
   }, []);
 
+  //===============================================AI=================================================
+  //프롬프트: 사용자가 1분 이상 아무런 동작을 하지 않으면 isCardPayment=true면 false로 바꿔주고, insertedAmount가 남아있다면 다 반환해주는 함수를 만들어줘.
+
+  // 컴포넌트 마운트 시 타이머 시작
+  useEffect(() => {
+    resetAutoReturnTimer();
+
+    // 컴포넌트 언마운트 시 타이머 정리
+    return () => {
+      if (autoReturnTimerRef.current) {
+        clearTimeout(autoReturnTimerRef.current);
+      }
+    };
+  }, []);
+
+  // 사용자 활동이 있을 때마다 타이머 리셋
+  useEffect(() => {
+    updateLastActivity();
+    resetAutoReturnTimer();
+  }, [insertedAmount, isCardPayment, boughtItems]);
+  //==================================================================================================
+
   const buyItem = (id: number) => {
+    updateLastActivity();
     const item = items.find((item) => item.id === id);
 
     if (item && item.amount > 0) {
@@ -152,7 +223,10 @@ function App() {
         <div>투입 금액: {insertedAmount} 원</div>
         <button
           className="text-red-400 w-[120px] h-[40px] rounded-[12px] border-2 border-red-400"
-          onClick={() => returnChange()}
+          onClick={() => {
+            updateLastActivity();
+            returnChange();
+          }}
         >
           반환하기
         </button>
