@@ -1,46 +1,116 @@
-# Getting Started with Create React App
+# 자판기 구현 프로젝트
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+이 프로젝트는 자판기의 동작을 구현했습니다. 현금 결제와 카드 결제가 가능하며, 거스름돈 반환, 일정시간 이상 동작 없을 시 자동 취소 등의 기능을 구현했습니다.
 
-## Available Scripts
+## 주요 기능
 
-In the project directory, you can run:
+### 결제
 
-### `npm start`
+- **현금 결제**: 100원, 500원, 1000원, 5000원, 10000원 현금 투입 가능
+- **카드 결제**
+- **자동 거스름돈 계산**: 가장 큰 단위의 현금부터 순서대로 거스름돈 자동 계산
+- **잔액 부족 시 자동 반환**: 가장 싼 물품보다 잔액이 적으면 자동으로 거스름돈 반환
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### 상품 관리
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- **재고 관리**: 구매 시 자동으로 재고 차감
+- **품절 상태**: 재고가 없을 때 "품절" 표시
+- **상품 출구**: 구매한 상품이 출구에 표시
 
-### `npm test`
+### 타이머 시스템
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- **타임아웃 자동 반환**: 사용자가 1분 이상 활동하지 않으면 자동으로 카드 결제 취소 및 현금 반환
+- **사용자 활동 감지**: 각각의 버튼 클릭 시마다 자동으로 반환 타이머 리셋
 
-### `npm run build`
+## 기술 스택
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- **Frontend**: React 19.1.1
+- **Language**: TypeScript 4.9.5
+- **Styling**: Tailwind CSS 3.4.17
+- **Build Tool**: Create React App (react-scripts 5.0.1)
+- **PostCSS**: 8.5.6 + autoprefixer 10.4.21
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 🚀 설치 및 실행
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 필수 요구사항
 
-### `npm run eject`
+- Node.js 16.0.0 이상
+- npm 또는 yarn
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### 설치
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+# 저장소 클론
+git clone [repository-url]
+cd jungwun-vending-machine
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+# 의존성 설치
+npm install
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### 개발 서버 실행
 
-## Learn More
+```bash
+npm start
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+브라우저에서 [http://localhost:3000](http://localhost:3000)으로 접속하여 애플리케이션을 확인할 수 있습니다.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### 빌드
+
+```bash
+# 프로덕션 빌드
+npm run build
+
+# 테스트 실행
+npm test
+```
+
+## 📁 프로젝트 구조
+
+```
+jungwun-vending-machine/
+├── public/
+│   ├── favicon.ico
+│   ├── index.html
+│   └── manifest.json
+├── src/
+│   ├── App.css              # 메인 스타일시트
+│   ├── App.tsx              # 메인 컴포넌트 (자판기 로직)
+│   ├── index.css            # Tailwind CSS 임포트
+│   ├── index.tsx            # React 앱 진입점
+│   └── reportWebVitals.ts   # 성능 측정
+├── tailwind.config.js       # Tailwind CSS 설정
+├── postcss.config.js        # PostCSS 설정
+├── package.json
+└── README.md
+```
+
+## 🎯 주요 상태 관리
+
+### 상태 변수
+
+- `insertedAmount`: 투입된 현금 금액
+- `items`: 상품 목록 (이름, 가격, 재고, ID)
+- `change`: 거스름돈 정보 (총액, 화폐별 개수)
+- `boughtItems`: 구매한 상품 목록
+- `isCardPayment`: 카드 결제 모드 여부
+
+### 인터페이스
+
+```typescript
+interface itemData {
+  name: string;
+  amount: number;
+  price: number;
+  id: number;
+}
+
+interface changeData {
+  totalAmount: number;
+  amountList: {
+    cash: number;
+    amount: number;
+  }[];
+}
+```
