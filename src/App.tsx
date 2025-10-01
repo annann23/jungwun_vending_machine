@@ -8,9 +8,19 @@ interface itemData {
   id: number;
 }
 
+interface changeData {
+  totalAmount: number;
+  amountList: {
+    cash: number;
+    amount: number;
+  }[];
+}
+
 function App() {
   const [insertedAmount, setInsertedAmount] = useState(0);
   const [items, setItems] = useState<itemData[]>([]);
+  const [change, setChange] = useState<changeData>();
+  const insertableCash = [100, 500, 1000, 5000, 10000];
 
   const initItems = () => {
     setItems([
@@ -20,7 +30,24 @@ function App() {
     ]);
   };
 
-  const insertableCash = [100, 500, 1000, 5000, 10000];
+  const calculateChange = () => {
+    let remainingAmount = insertedAmount;
+    const currentChange: changeData = {
+      totalAmount: remainingAmount,
+      amountList: [],
+    };
+
+    for (let i = insertableCash.length - 1; i >= 0; i--) {
+      if (remainingAmount >= insertableCash[i]) {
+        const amount = Math.floor(remainingAmount / insertableCash[i]);
+        currentChange.amountList.push({ cash: insertableCash[i], amount });
+        remainingAmount = remainingAmount % insertableCash[i];
+      }
+    }
+
+    setChange(currentChange);
+    setInsertedAmount(remainingAmount);
+  };
 
   useEffect(() => {
     initItems();
@@ -81,6 +108,23 @@ function App() {
           ))}
         </div>
         <div>투입 금액: {insertedAmount} 원</div>
+        <button
+          className="text-red-400 w-[120px] h-[40px] rounded-[12px] border-2 border-red-400"
+          onClick={() => calculateChange()}
+        >
+          반환하기
+        </button>
+        {change && change?.amountList.length > 0 && (
+          <>
+            <div>잔액 목록</div>
+            <div>총 잔액: {change.totalAmount} 원</div>
+            {change.amountList.map((item) => (
+              <div key={item.cash}>
+                {item.cash}원: {item.amount}개
+              </div>
+            ))}
+          </>
+        )}
       </div>
       <div>
         <h3>카드결제</h3>
