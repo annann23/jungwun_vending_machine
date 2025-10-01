@@ -31,8 +31,8 @@ function App() {
     ]);
   };
 
-  const calculateChange = () => {
-    let remainingAmount = insertedAmount;
+  const returnChange = (amount?: number) => {
+    let remainingAmount = amount !== undefined ? amount : insertedAmount;
     const currentChange: changeData = {
       totalAmount: remainingAmount,
       amountList: [],
@@ -58,13 +58,22 @@ function App() {
     const item = items.find((item) => item.id === id);
 
     if (item && item.amount > 0 && insertedAmount >= item.price) {
-      setInsertedAmount(insertedAmount - item.price);
+      let remainingAmount = insertedAmount - item.price;
       setBoughtItems([...boughtItems, item]);
+      setInsertedAmount(remainingAmount);
       setItems(
         items.map((item) =>
           item.id === id ? { ...item, amount: item.amount - 1 } : item
         )
       );
+      if (
+        remainingAmount <
+        Math.min(
+          ...items.filter((item) => item.amount > 0).map((item) => item.price)
+        )
+      ) {
+        returnChange(remainingAmount); // insertedAmount가 비동기적으로 업데이트 되기 때문에 계산된 값을 직접 전달
+      }
     }
     // 실제 웹페이지라면 else 상황에서는 잔액이 부족하거나 재고가 없다고 팝업이 뜨겠지만
     // 자판기와 유사하게 작동하게 하기 위해 else 상황에서 아무런 동작도 하지 않게 했습니다.
@@ -124,7 +133,7 @@ function App() {
         <div>투입 금액: {insertedAmount} 원</div>
         <button
           className="text-red-400 w-[120px] h-[40px] rounded-[12px] border-2 border-red-400"
-          onClick={() => calculateChange()}
+          onClick={() => returnChange()}
         >
           반환하기
         </button>
