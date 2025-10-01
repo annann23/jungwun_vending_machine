@@ -24,7 +24,7 @@ function App() {
 
   useEffect(() => {
     initItems();
-  });
+  }, []);
 
   const buyItem = (id: number) => {};
 
