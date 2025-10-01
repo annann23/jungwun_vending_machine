@@ -22,6 +22,7 @@ function App() {
   const [change, setChange] = useState<changeData>();
   const insertableCash = [100, 500, 1000, 5000, 10000];
   const [boughtItems, setBoughtItems] = useState<itemData[]>([]);
+  const [isCardPayment, setIsCardPayment] = useState(false);
 
   const initItems = () => {
     setItems([
@@ -97,9 +98,10 @@ function App() {
                   disabled={item.amount === 0 || insertedAmount < item.price}
                   className={`text-white w-[120px] h-[40px] rounded-[12px]
                 ${
-                  item.amount === 0 || insertedAmount < item.price
-                    ? "cursor-default bg-gray-400"
-                    : "cursor-pointer bg-red-400"
+                  item.amount != 0 &&
+                  (insertedAmount >= item.price || isCardPayment)
+                    ? "cursor-pointer bg-red-400"
+                    : "cursor-default bg-gray-400"
                 }`}
                 >
                   {item.amount === 0 ? "품절" : "구매하기"}
@@ -151,12 +153,24 @@ function App() {
       </div>
       <div>
         <h3 className="mb-4 font-bold text-xl">카드결제</h3>
-        <button
-          className="text-red-400 w-[120px] h-[40px] rounded-[12px] border-2 border-red-400"
-          onClick={() => {}}
-        >
-          카드
-        </button>
+        <div className="flex flex-col items-center justify-center gap-4">
+          <button
+            className="text-red-400 w-[120px] h-[40px] rounded-[12px] border-2 border-red-400"
+            onClick={() => {
+              setIsCardPayment(true);
+            }}
+          >
+            카드
+          </button>
+          <button
+            className="text-red-400 w-[120px] h-[40px] rounded-[12px] border-2 border-red-400"
+            onClick={() => {
+              setIsCardPayment(false);
+            }}
+          >
+            결제 취소
+          </button>
+        </div>
       </div>
     </div>
   );
