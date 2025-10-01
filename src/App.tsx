@@ -26,7 +26,20 @@ function App() {
     initItems();
   }, []);
 
-  const buyItem = (id: number) => {};
+  const buyItem = (id: number) => {
+    const item = items.find((item) => item.id === id);
+
+    if (item && item.amount > 0 && insertedAmount >= item.price) {
+      setInsertedAmount(insertedAmount - item.price);
+      setItems(
+        items.map((item) =>
+          item.id === id ? { ...item, amount: item.amount - 1 } : item
+        )
+      );
+    }
+    // 실제 웹페이지라면 else 상황에서는 잔액이 부족하거나 재고가 없다고 팝업이 뜨겠지만
+    // 자판기와 유사하게 작동하게 하기 위해 버튼을 눌러도 아무런 동작도 하지 않습니다.
+  };
 
   return (
     <div className="App">
@@ -49,7 +62,7 @@ function App() {
                     : "cursor-pointer bg-red-400"
                 }`}
             >
-              구매하기
+              {item.amount === 0 ? "품절" : "구매하기"}
             </button>
           </div>
         ))}
