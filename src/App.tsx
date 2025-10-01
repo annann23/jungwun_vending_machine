@@ -51,6 +51,16 @@ function App() {
     setInsertedAmount(remainingAmount);
   };
 
+  const handleInsertedAmount = (amount: number) => {
+    if (isCardPayment) returnChange(amount);
+    else setInsertedAmount(insertedAmount + amount);
+  };
+
+  const handleCardPayment = (value: boolean) => {
+    if (insertedAmount > 0) return;
+    setIsCardPayment(value);
+  };
+
   useEffect(() => {
     initItems();
   }, []);
@@ -58,22 +68,30 @@ function App() {
   const buyItem = (id: number) => {
     const item = items.find((item) => item.id === id);
 
-    if (item && item.amount > 0 && insertedAmount >= item.price) {
-      let remainingAmount = insertedAmount - item.price;
-      setBoughtItems([...boughtItems, item]);
-      setInsertedAmount(remainingAmount);
-      setItems(
-        items.map((item) =>
-          item.id === id ? { ...item, amount: item.amount - 1 } : item
-        )
-      );
-      if (
-        remainingAmount <
-        Math.min(
-          ...items.filter((item) => item.amount > 0).map((item) => item.price)
-        )
-      ) {
-        returnChange(remainingAmount); // insertedAmount가 비동기적으로 업데이트 되기 때문에 계산된 값을 직접 전달
+    if (item && item.amount > 0) {
+      if (isCardPayment) {
+        setBoughtItems([...boughtItems, item]);
+        setIsCardPayment((prev) => !prev);
+        return;
+      }
+
+      if (insertedAmount >= item.price) {
+        let remainingAmount = insertedAmount - item.price;
+        setBoughtItems([...boughtItems, item]);
+        setInsertedAmount(remainingAmount);
+        setItems(
+          items.map((item) =>
+            item.id === id ? { ...item, amount: item.amount - 1 } : item
+          )
+        );
+        if (
+          remainingAmount <
+          Math.min(
+            ...items.filter((item) => item.amount > 0).map((item) => item.price)
+          )
+        ) {
+          returnChange(remainingAmount); // insertedAmount가 비동기적으로 업데이트 되기 때문에 계산된 값을 직접 전달
+        }
       }
     }
     // 실제 웹페이지라면 else 상황에서는 잔액이 부족하거나 재고가 없다고 팝업이 뜨겠지만
@@ -125,8 +143,8 @@ function App() {
           {insertableCash.map((item) => (
             <button
               key={item}
-              onClick={() => setInsertedAmount(insertedAmount + item)}
-              className="text-red-400 w-[80px] h-[40px] rounded-[12px] border-2 border-red-400"
+              onClick={() => handleInsertedAmount(item)}
+              className={`text-red-400 w-[80px] h-[40px] rounded-[12px] border-2 border-red-400`}
             >
               {item}원
             </button>
@@ -155,17 +173,25 @@ function App() {
         <h3 className="mb-4 font-bold text-xl">카드결제</h3>
         <div className="flex flex-col items-center justify-center gap-4">
           <button
-            className="text-red-400 w-[120px] h-[40px] rounded-[12px] border-2 border-red-400"
+            className={`w-[120px] h-[40px] rounded-[12px] border-2 ${
+              insertedAmount > 0 || isCardPayment
+                ? "cursor-default border-gray-400 text-gray-400"
+                : "cursor-pointer border-red-400 text-red-400"
+            }`}
             onClick={() => {
-              setIsCardPayment(true);
+              handleCardPayment(true);
             }}
           >
             카드
           </button>
           <button
-            className="text-red-400 w-[120px] h-[40px] rounded-[12px] border-2 border-red-400"
+            className={`text-red-400 w-[120px] h-[40px] rounded-[12px] border-2 border-red-400 ${
+              isCardPayment
+                ? "cursor-pointer border-red-400 text-red-400"
+                : "cursor-default border-gray-400 text-gray-400"
+            }`}
             onClick={() => {
-              setIsCardPayment(false);
+              handleCardPayment(false);
             }}
           >
             결제 취소
