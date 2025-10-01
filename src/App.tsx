@@ -113,7 +113,6 @@ function App() {
                 <div>{item.price}원</div>
                 <button
                   onClick={() => buyItem(item.id)}
-                  disabled={item.amount === 0 || insertedAmount < item.price}
                   className={`text-white w-[120px] h-[40px] rounded-[12px]
                 ${
                   item.amount != 0 &&
@@ -130,8 +129,8 @@ function App() {
           <div>
             <div>상품 출구</div>
             <div className="border-2 border-black-700 w-[120px] h-[60px]">
-              {boughtItems.map((item) => (
-                <div key={item.id}>{item.name}</div>
+              {boughtItems.map((item, index) => (
+                <div key={item.name + index}>{item.name}</div>
               ))}
             </div>
           </div>
